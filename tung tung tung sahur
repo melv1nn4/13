@@ -1,0 +1,145 @@
+import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.DateTimeException;
+import java.util.InputMismatchException;
+
+public class Main {
+
+    public static final int MAX_SIZE = 50;
+    public static LocalDateTime[] dates = new LocalDateTime[MAX_SIZE];
+    public static String[] texts = new String[MAX_SIZE];
+
+    public static void додатиЗапис() {
+        Scanner scanner = new Scanner(System.in);
+        LocalDateTime дата;
+
+        while (true) {
+            try {
+                System.out.println("Введіть дату (рік місяць день):");
+                int рік = scanner.nextInt();
+                int місяць = scanner.nextInt();
+                int день = scanner.nextInt();
+                scanner.nextLine();
+                дата = LocalDateTime.of(рік, місяць, день, 0, 0);
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Невірний формат чисел.");
+                scanner.nextLine();
+            } catch (DateTimeException e) {
+                System.out.println("Некоректна дата.");
+                scanner.nextLine();
+            }
+        }
+
+        StringBuilder текст = new StringBuilder();
+        System.out.println("Введіть текст (Enter на порожньому рядку — завершення):");
+
+        while (true) {
+            String рядок = scanner.nextLine();
+            if (рядок.isEmpty()) break;
+            текст.append(рядок).append("\n");
+        }
+
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (dates[i] == null) {
+                dates[i] = дата;
+                texts[i] = текст.toString();
+                System.out.println("Запис збережено.");
+                return;
+            }
+        }
+
+        System.out.println("Список повний. Видаліть старі записи.");
+    }
+
+    public static void видалитиЗапис() {
+        Scanner scanner = new Scanner(System.in);
+        LocalDateTime дата;
+
+        while (true) {
+            try {
+                System.out.println("Введіть дату для видалення (рік місяць день):");
+                int рік = scanner.nextInt();
+                int місяць = scanner.nextInt();
+                int день = scanner.nextInt();
+                scanner.nextLine();
+                дата = LocalDateTime.of(рік, місяць, день, 0, 0);
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Помилка формату.");
+                scanner.nextLine();
+            } catch (DateTimeException e) {
+                System.out.println("Невірна дата.");
+                scanner.nextLine();
+            }
+        }
+
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (дата.equals(dates[i])) {
+                dates[i] = null;
+                texts[i] = null;
+                System.out.println("Запис видалено.");
+                return;
+            }
+        }
+
+        System.out.println("Запис не знайдено.");
+    }
+
+    public static void показатиЗаписи() {
+        boolean є = false;
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (dates[i] != null) {
+                є = true;
+                System.out.println("Дата: " + dates[i].toLocalDate());
+                System.out.println("Зміст:\n" + texts[i]);
+                System.out.println("--------------------");
+            }
+        }
+
+        if (!є) {
+            System.out.println("Записів немає.");
+        }
+    }
+
+    public static void меню() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n=== ЩОДЕННИК ===");
+            System.out.println("1. Створити новий запис");
+            System.out.println("2. Видалити запис за датою");
+            System.out.println("3. Переглянути всі записи");
+            System.out.println("4. Вихід");
+            System.out.print("Ваш вибір: ");
+
+            try {
+                int вибір = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (вибір) {
+                    case 1:
+                        додатиЗапис();
+                        break;
+                    case 2:
+                        видалитиЗапис();
+                        break;
+                    case 3:
+                        показатиЗаписи();
+                        break;
+                    case 4:
+                        System.out.println("До зустрічі!");
+                        return;
+                    default:
+                        System.out.println("Невірний пункт.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Введіть число.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        меню();
+    }
+}
